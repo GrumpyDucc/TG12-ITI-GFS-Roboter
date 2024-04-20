@@ -7,6 +7,8 @@ lcd mylcd;
 
 BufferedSerial hc05(PB_10, PB_11, 9600);
 
+DigitalIn sensor(PA_1);
+
 PwmOut lv(PC_7);
 PwmOut lr(PC_6);
 PwmOut rr(PC_9);
@@ -14,7 +16,14 @@ PwmOut rv(PC_8);
 
 float speed = 0.45;
 int new_speed = 0;
-bool readingFlag = false;
+
+void stop()
+{
+    lv = 0;
+    lr = 0;
+    rv = 0;
+    rr = 0;
+}
 
 int main()
 {
@@ -22,6 +31,18 @@ int main()
 
     while (true)
     {
+        if (sensor.read() == 1) // Black 1 - White 0
+        {
+            mylcd.cls();
+            mylcd.printf("Black");
+            thread_sleep_for(100);
+        }
+        else
+        {
+            mylcd.cls();
+            mylcd.printf("White");
+            thread_sleep_for(100);
+        }
         if (hc05.readable())
         {
             thread_sleep_for(20);
@@ -45,10 +66,7 @@ int main()
                 lr = speed;
                 break; // rückwärts
             case 'O':
-                lv = 0;
-                lr = 0;
-                rv = 0;
-                rr = 0;
+                stop();
                 break; // aus
             case 'A':
                 hc05.read(data, 2);             // 2-stellige Zahl nach A lesen
