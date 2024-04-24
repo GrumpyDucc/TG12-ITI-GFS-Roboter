@@ -13,12 +13,12 @@ DigitalIn manualDriveSwitch(PA_10);
 
 PwmOut lv(PC_7);
 PwmOut lr(PC_6);
-PwmOut rr(PC_9);
-PwmOut rv(PC_8);
+PwmOut rr(PC_8);
+PwmOut rv(PC_9);
 
 #define STANDARD_SPEED 0.50
 #define TURN_SPEED_FAST 1
-#define TURN_SPEED_SLOW 0.5
+#define TURN_SPEED_SLOW 0.40
 #define TURNTIME 25
 
 float speed = STANDARD_SPEED; // minimum value for the car to move
@@ -27,7 +27,6 @@ bool followLine = false;
 
 void rightWheel(float speed)
 {
-    printf("rw: %d\n", int(speed * 100));
     if (speed > 0) // vorwärts
     {
         rv = speed;
@@ -42,7 +41,6 @@ void rightWheel(float speed)
 
 void leftWheel(float speed)
 {
-    printf("lw: %d\n", int(speed * 100));
     if (speed > 0) // vorwärts
     {
         lv = speed;
@@ -127,20 +125,21 @@ int main()
         }
         if (followLine)
         {
-            if (sensorRight.read() == 1) // rechter Sensor über schwarz -> nach links lenken
+            if (sensorRight.read()) // rechter Sensor über schwarz -> nach links lenken
             {
                 rightWheel(TURN_SPEED_SLOW);
                 leftWheel(TURN_SPEED_FAST);
             }
-            else if (sensorLeft.read() == 1) // linker Sensor über schwarz -> nach rechts lenken
+            else if (sensorLeft.read()) // linker Sensor über schwarz -> nach rechts lenken
             {
+                printf("%d\n", sensorLeft.read());
                 rightWheel(TURN_SPEED_FAST);
                 leftWheel(TURN_SPEED_SLOW);
             }
             else // beide Sensoren über weiß oder beide über schwarz-> geradeaus fahren
             {
                 rightWheel(STANDARD_SPEED);
-                leftWheel(STANDARD_SPEED);
+                leftWheel(-STANDARD_SPEED);
             }
         }
     }
