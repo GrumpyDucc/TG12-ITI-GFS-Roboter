@@ -11,10 +11,10 @@ DigitalIn sensorRight(PA_14);
 DigitalIn sensorLeft(PA_15);
 DigitalIn manualDriveSwitch(PA_1);
 
-PwmOut lv(PC_7);
-PwmOut lr(PC_6);
-PwmOut rr(PC_8);
-PwmOut rv(PC_9);
+PwmOut lv(PC_7); // Ausgang Rad links vorwärts
+PwmOut lr(PC_6); // Ausgang Rad links rückwärts
+PwmOut rr(PC_8); // Ausgang Rad rechts vorwärts
+PwmOut rv(PC_9); // Ausgang Rad rechts rückwärts
 
 #define STANDARD_SPEED 0.65  // Mittlere Geschwindikeit für das normale Fahren
 #define TURN_SPEED_FAST 1    // Maxgeschwindigkeit, für ein schnelles Drehen des äußeren Rads
@@ -144,12 +144,12 @@ int main()
                 break;
             case 'A':                           // Geschwindigkeitsänderung feststellen
                 hc05.read(data, 3);             // 2-stellige Zahl und das end "A" lesen
-                int new_speed = 0;              //
+                int new_speed = 0;              // variable für neue Geschwindigkeit erzeigen
                 sscanf(data, "%d", &new_speed); // in zahl umwandeln
                 speed = float(new_speed) / 100; // zu korrektem float wandeln
+                printSpeed();                   // neue Geschwindigkeit anzeigen
                 break;
             }
-            printSpeed();
         }
         if (followLine)
         {
