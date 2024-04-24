@@ -11,10 +11,10 @@ DigitalIn sensorRight(PA_14);
 DigitalIn sensorLeft(PA_15);
 DigitalIn manualDriveSwitch(PA_1);
 
-PwmOut lv(PC_7); // Ausgang Rad links vorwärts
-PwmOut lr(PC_6); // Ausgang Rad links rückwärts
-PwmOut rr(PC_8); // Ausgang Rad rechts vorwärts
-PwmOut rv(PC_9); // Ausgang Rad rechts rückwärts
+PwmOut leftForward(PC_7);   // Ausgang Rad links vorwärts
+PwmOut leftBackward(PC_6);  // Ausgang Rad links rückwärts
+PwmOut rightForward(PC_8);  // Ausgang Rad rechts vorwärts
+PwmOut rightBackward(PC_9); // Ausgang Rad rechts rückwärts
 
 #define STANDARD_SPEED 0.65  // Mittlere Geschwindikeit für das normale Fahren
 #define TURN_SPEED_FAST 1    // Maxgeschwindigkeit, für ein schnelles Drehen des äußeren Rads
@@ -28,13 +28,13 @@ void rightWheel(float speed)
 {
     if (speed > 0) // vorwärts
     {
-        rv = speed;
-        rr = 0;
+        rightBackward = speed;
+        rightForward = 0;
     }
     else // rückwärts
     {
-        rv = 0;
-        rr = speed * -1;
+        rightBackward = 0;
+        rightForward = speed * -1;
     }
 }
 
@@ -43,23 +43,23 @@ void leftWheel(float speed)
 {
     if (speed > 0) // vorwärts
     {
-        lv = speed;
-        lr = 0;
+        leftForward = speed;
+        leftBackward = 0;
     }
     else // rückwärts
     {
-        lv = 0;
-        lr = speed * -1;
+        leftForward = 0;
+        leftBackward = speed * -1;
     }
 }
 
 /** Alle Motoren stoppen*/
 void stop() // Roboter anhalten
 {
-    lv = 0;
-    lr = 0;
-    rr = 0;
-    rv = 0;
+    leftForward = 0;
+    leftBackward = 0;
+    rightForward = 0;
+    rightBackward = 0;
 }
 
 /** Geschwindigkeit auf LCD-Display anzeigen*/
