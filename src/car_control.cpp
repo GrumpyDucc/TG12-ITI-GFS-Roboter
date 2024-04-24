@@ -16,16 +16,14 @@ PwmOut lr(PC_6);
 PwmOut rr(PC_8);
 PwmOut rv(PC_9);
 
-#define STANDARD_SPEED 0.40
-#define TURN_SPEED_FAST 1
-#define TURN_SPEED_SLOW 0.35
-#define TURNTIME 50
+#define STANDARD_SPEED 0.65  // Mittlere Geschwindikeit für das normale Fahren
+#define TURN_SPEED_FAST 1    // Maxgeschwindigkeit, für ein schnelles Drehen des äußeren Rads
+#define TURN_SPEED_SLOW 0.45 // Geringe Geschwindigkeit für langsames Drehen des inneren Rads
 
-float speed = STANDARD_SPEED; // minimum value for the car to move
-int new_speed = 0;
-bool followLine = false;
+float speed = STANDARD_SPEED; // Startgeschwindigkeit setzen
+bool followLine = false;      // Linie folgen JA (1) / NEIN (0)
 
-void rightWheel(float speed)
+void rightWheel(float speed) // Geschwindigkeit des rechten Rads einstellen (+ -> vorwärts, - -> rückwärts)
 {
     if (speed > 0) // vorwärts
     {
@@ -39,7 +37,7 @@ void rightWheel(float speed)
     }
 }
 
-void leftWheel(float speed)
+void leftWheel(float speed) // Geschwindigkeit des linken Rads einstellen (+ -> vorwärts, - -> rückwärts)
 {
     if (speed > 0) // vorwärts
     {
@@ -53,7 +51,7 @@ void leftWheel(float speed)
     }
 }
 
-void stop()
+void stop() // Roboter anhalten
 {
     lv = 0;
     lr = 0;
@@ -61,15 +59,43 @@ void stop()
     rv = 0;
 }
 
-void switchDriveMode()
+void printSpeed() // Geschwindigkeit auf LCD-Display anzeigen
+{
+    if (not followLine)
+    {
+        mylcd.cursorpos(0x7);                 // Cursor auf pos 8 in 1. Zeile setzen (nach "Speed: " Schriftzug)
+        mylcd.printf("%d", int(speed * 100)); // Geschwindigkeit anzeigen
+    }
+}
+
+void switchDriveMode() // Fahrmodus umschalten
 {
     followLine = !followLine; // Fahrmodus umschalten
     stop();                   // Auto anhalten
+
+    if (followLine) // Wenn im Linienmodus, dann keine Geschwindigkeit ausgeben
+    {
+        mylcd.cursorpos(0x7);
+        mylcd.printf("- ");
+        mylcd.cursorpos(0x4C);
+        mylcd.printf("On ");
+    }
+    else
+    {
+        printSpeed();
+        mylcd.cursorpos(0x4C);
+        mylcd.printf("Off");
+    }
 }
 
-void init()
+void init() // Initialisierung
 {
-    mylcd.clear();
+    mylcd.cls();                     // LCD-Display leeren und cursor auf 0,0 setzen
+    mylcd.printf("Speed:");          // Schriftzug für Geschwindigkeit anzeigen
+    mylcd.cursorpos(0x40);           // in 2- Zeile springen
+    mylcd.printf("Auto Drive: Off"); // Schriftzug für Fahrmodus anzeigen
+    printSpeed();                    // Geschwindigkeit anzeigen
+    // Widerstände einstellen
     sensorLeft.mode(PullDown);
     sensorRight.mode(PullDown);
     manualDriveSwitch.mode(PullDown);
@@ -85,7 +111,7 @@ int main()
         if (manualDriveSwitch) // manueller Fahrmoduswechsel
         {
             switchDriveMode();
-            thread_sleep_for(250);
+            thread_sleep_for(250); // Entprellen
         }
         if (hc05.readable())
         {
@@ -112,16 +138,18 @@ int main()
                 rightWheel(speed * -1);
                 leftWheel(speed * -1);
                 break;
-            case 'O': // aus
+            case 'O': // reset schalter
                 stop();
                 followLine = false;
                 break;
             case 'A':                           // Geschwindigkeitsänderung feststellen
                 hc05.read(data, 3);             // 2-stellige Zahl und das end "A" lesen
+                int new_speed = 0;              //
                 sscanf(data, "%d", &new_speed); // in zahl umwandeln
                 speed = float(new_speed) / 100; // zu korrektem float wandeln
                 break;
             }
+            printSpeed();
         }
         if (followLine)
         {
