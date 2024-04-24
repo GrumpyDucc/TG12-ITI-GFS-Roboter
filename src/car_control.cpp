@@ -18,7 +18,7 @@ PwmOut rv(PC_8);
 
 #define STANDARD_SPEED 0.50
 #define TURN_SPEED_FAST 1
-#define TURN_SPEED_SLOW 0.25
+#define TURN_SPEED_SLOW 0.5
 #define TURNTIME 25
 
 float speed = STANDARD_SPEED; // minimum value for the car to move
