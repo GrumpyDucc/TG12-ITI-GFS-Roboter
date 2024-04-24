@@ -1,0 +1,4 @@
+mbed-os/connectivity/*
+mbed-os/storage/*
+mbed-os/drivers/usb/*
+mbed-os/features/*
