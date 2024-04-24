@@ -7,19 +7,19 @@ lcd mylcd;
 
 BufferedSerial hc05(PB_10, PB_11, 9600);
 
-DigitalIn sensorRight(PA_1);
-DigitalIn sensorLeft(PA_2);
-DigitalIn manualDriveSwitch(PA_10);
+DigitalIn sensorRight(PA_14);
+DigitalIn sensorLeft(PA_15);
+DigitalIn manualDriveSwitch(PA_1);
 
 PwmOut lv(PC_7);
 PwmOut lr(PC_6);
 PwmOut rr(PC_8);
 PwmOut rv(PC_9);
 
-#define STANDARD_SPEED 0.55
+#define STANDARD_SPEED 0.40
 #define TURN_SPEED_FAST 1
-#define TURN_SPEED_SLOW 0.40
-#define TURNTIME 25
+#define TURN_SPEED_SLOW 0.35
+#define TURNTIME 50
 
 float speed = STANDARD_SPEED; // minimum value for the car to move
 int new_speed = 0;
@@ -127,8 +127,8 @@ int main()
         {
             if (sensorRight.read()) // rechter Sensor über schwarz -> nach links lenken
             {
-                rightWheel(TURN_SPEED_SLOW);
-                leftWheel(TURN_SPEED_FAST);
+                rightWheel(-TURN_SPEED_SLOW);
+                leftWheel(-TURN_SPEED_FAST);
             }
             else if (sensorLeft.read()) // linker Sensor über schwarz -> nach rechts lenken
             {
