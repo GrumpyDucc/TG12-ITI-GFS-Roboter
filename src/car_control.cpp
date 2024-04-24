@@ -23,7 +23,8 @@ PwmOut rv(PC_9); // Ausgang Rad rechts rückwärts
 float speed = STANDARD_SPEED; // Startgeschwindigkeit setzen
 bool followLine = false;      // Linie folgen JA (1) / NEIN (0)
 
-void rightWheel(float speed) // Geschwindigkeit des rechten Rads einstellen (+ -> vorwärts, - -> rückwärts)
+/** Geschwindigkeit des rechten Rads einstellen (+ -> vorwärts, - -> rückwärts) */
+void rightWheel(float speed)
 {
     if (speed > 0) // vorwärts
     {
@@ -37,7 +38,8 @@ void rightWheel(float speed) // Geschwindigkeit des rechten Rads einstellen (+ -
     }
 }
 
-void leftWheel(float speed) // Geschwindigkeit des linken Rads einstellen (+ -> vorwärts, - -> rückwärts)
+/** Geschwindigkeit des linken Rads einstellen (+ -> vorwärts, - -> rückwärts) */
+void leftWheel(float speed)
 {
     if (speed > 0) // vorwärts
     {
@@ -51,6 +53,7 @@ void leftWheel(float speed) // Geschwindigkeit des linken Rads einstellen (+ -> 
     }
 }
 
+/** Alle Motoren stoppen*/
 void stop() // Roboter anhalten
 {
     lv = 0;
@@ -59,7 +62,8 @@ void stop() // Roboter anhalten
     rv = 0;
 }
 
-void printSpeed() // Geschwindigkeit auf LCD-Display anzeigen
+/** Geschwindigkeit auf LCD-Display anzeigen*/
+void printSpeed()
 {
     if (not followLine)
     {
@@ -68,17 +72,20 @@ void printSpeed() // Geschwindigkeit auf LCD-Display anzeigen
     }
 }
 
-void switchDriveMode() // Fahrmodus umschalten
+/** Fahrmodus umschalten*/
+void switchDriveMode()
 {
     followLine = !followLine; // Fahrmodus umschalten
     stop();                   // Auto anhalten
 
     if (followLine) // Wenn im Linienmodus, dann keine Geschwindigkeit ausgeben
     {
-        mylcd.cursorpos(0x7);
-        mylcd.printf("- ");
-        mylcd.cursorpos(0x4C);
-        mylcd.printf("On ");
+        mylcd.cursorpos(0x7);  // Cursor nach "Speed: " setzen
+        mylcd.printf("- ");    // "- " ausgeben, da geschwindigkeit automatisch kontrolliert wird,
+                               // Leerzeichen um die letzte Stelle der Geschwindigkeit zu überschreiben
+        mylcd.cursorpos(0x4C); // Cursor in 2. Zeile nach "Auto Drive: " setzen
+        mylcd.printf("On ");   // "On " ausgeben,
+                               // Leerzeichen um das letzte 'f' von Off zu überschreiben
     }
     else
     {
