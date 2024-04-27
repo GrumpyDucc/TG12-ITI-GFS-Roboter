@@ -16,7 +16,7 @@ PwmOut lr(PC_6);
 PwmOut rr(PC_8);
 PwmOut rv(PC_9);
 
-#define STANDARD_SPEED 0.50
+#define STANDARD_SPEED 0.55
 #define TURN_SPEED_FAST 1
 #define TURN_SPEED_SLOW 0.40
 #define TURNTIME 25
