@@ -7,8 +7,8 @@ lcd mylcd;
 
 BufferedSerial hc05(PB_10, PB_11, 9600);
 
-DigitalIn sensorRight(PA_1);
-DigitalIn sensorLeft(PA_2);
+DigitalIn sensorRight(PA_14);
+DigitalIn sensorLeft(PA_15);
 DigitalIn manualDriveSwitch(PA_10);
 
 PwmOut lv(PC_7);
@@ -128,13 +128,12 @@ int main()
             if (sensorRight.read()) // rechter Sensor über schwarz -> nach links lenken
             {
                 rightWheel(TURN_SPEED_SLOW);
-                leftWheel(TURN_SPEED_FAST);
+                leftWheel(-TURN_SPEED_FAST);
             }
             else if (sensorLeft.read()) // linker Sensor über schwarz -> nach rechts lenken
             {
-                printf("%d\n", sensorLeft.read());
                 rightWheel(TURN_SPEED_FAST);
-                leftWheel(TURN_SPEED_SLOW);
+                leftWheel(-TURN_SPEED_SLOW);
             }
             else // beide Sensoren über weiß oder beide über schwarz-> geradeaus fahren
             {
