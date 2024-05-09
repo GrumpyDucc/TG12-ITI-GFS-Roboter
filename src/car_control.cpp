@@ -9,12 +9,12 @@ BufferedSerial hc05(PB_10, PB_11, 9600);
 
 DigitalIn sensorRight(PA_14);
 DigitalIn sensorLeft(PA_15);
-DigitalIn manualDriveSwitch(PA_1);
+DigitalIn manualDriveSwitch(PA_10);
 
-PwmOut leftForward(PC_7);   // Ausgang Rad links vorwärts
-PwmOut leftBackward(PC_6);  // Ausgang Rad links rückwärts
-PwmOut rightForward(PC_8);  // Ausgang Rad rechts vorwärts
-PwmOut rightBackward(PC_9); // Ausgang Rad rechts rückwärts
+PwmOut lv(PC_7);
+PwmOut lr(PC_6);
+PwmOut rr(PC_9);
+PwmOut rv(PC_8);
 
 #define STANDARD_SPEED 0.65  // Mittlere Geschwindikeit für das normale Fahren
 #define TURN_SPEED_FAST 1    // Maxgeschwindigkeit, für ein schnelles Drehen des äußeren Rads
@@ -26,6 +26,7 @@ bool followLine = false;      // Linie folgen JA (1) / NEIN (0)
 /** Geschwindigkeit des rechten Rads einstellen (+ -> vorwärts, - -> rückwärts) */
 void rightWheel(float speed)
 {
+    printf("speed: %f\n", speed);
     if (speed > 0) // vorwärts
     {
         rightBackward = speed;
@@ -41,6 +42,7 @@ void rightWheel(float speed)
 /** Geschwindigkeit des linken Rads einstellen (+ -> vorwärts, - -> rückwärts) */
 void leftWheel(float speed)
 {
+    printf("speed: %f\n", speed);
     if (speed > 0) // vorwärts
     {
         leftForward = speed;
@@ -163,17 +165,17 @@ int main()
             if (sensorRight.read()) // rechter Sensor über schwarz -> nach links lenken
             {
                 rightWheel(-TURN_SPEED_SLOW);
-                leftWheel(-TURN_SPEED_FAST);
+                leftWheel(TURN_SPEED_FAST);
             }
             else if (sensorLeft.read()) // linker Sensor über schwarz -> nach rechts lenken
             {
                 rightWheel(TURN_SPEED_FAST);
-                leftWheel(TURN_SPEED_SLOW);
+                leftWheel(-TURN_SPEED_SLOW);
             }
             else // beide Sensoren über weiß oder beide über schwarz-> geradeaus fahren
             {
                 rightWheel(STANDARD_SPEED);
-                leftWheel(-STANDARD_SPEED);
+                leftWheel(STANDARD_SPEED);
             }
         }
     }
