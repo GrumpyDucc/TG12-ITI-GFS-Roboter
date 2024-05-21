@@ -11,17 +11,18 @@ DigitalIn sensorRight(PA_14);
 DigitalIn sensorLeft(PA_15);
 DigitalIn manualDriveSwitch(PA_10);
 
-PwmOut lv(PC_7);
-PwmOut lr(PC_6);
-PwmOut rr(PC_9);
-PwmOut rv(PC_8);
+PwmOut leftForward(PC_7);
+PwmOut leftReverse(PC_6);
+PwmOut rightReverse(PC_8);
+PwmOut rightForward(PC_9);
 
 #define STANDARD_SPEED 0.65  // Mittlere Geschwindikeit für das normale Fahren
 #define TURN_SPEED_FAST 1    // Maxgeschwindigkeit, für ein schnelles Drehen des äußeren Rads
 #define TURN_SPEED_SLOW 0.45 // Geringe Geschwindigkeit für langsames Drehen des inneren Rads
+#define BLACK 1              // Schwarz
 
 float speed = STANDARD_SPEED; // Startgeschwindigkeit setzen
-bool followLine = false;      // Linie folgen JA (1) / NEIN (0)
+bool followLine = false;      // Linie folgen JA (true) / NEIN (false)
 
 /** Geschwindigkeit des rechten Rads einstellen (+ -> vorwärts, - -> rückwärts) */
 void rightWheel(float speed)
@@ -29,12 +30,12 @@ void rightWheel(float speed)
     printf("speed: %f\n", speed);
     if (speed > 0) // vorwärts
     {
-        rightBackward = speed;
+        rightReverse = speed;
         rightForward = 0;
     }
     else // rückwärts
     {
-        rightBackward = 0;
+        rightReverse = 0;
         rightForward = speed * -1;
     }
 }
@@ -46,12 +47,12 @@ void leftWheel(float speed)
     if (speed > 0) // vorwärts
     {
         leftForward = speed;
-        leftBackward = 0;
+        leftReverse = 0;
     }
     else // rückwärts
     {
         leftForward = 0;
-        leftBackward = speed * -1;
+        leftReverse = speed * -1;
     }
 }
 
@@ -59,9 +60,9 @@ void leftWheel(float speed)
 void stop() // Roboter anhalten
 {
     leftForward = 0;
-    leftBackward = 0;
+    leftReverse = 0;
     rightForward = 0;
-    rightBackward = 0;
+    rightReverse = 0;
 }
 
 /** Geschwindigkeit auf LCD-Display anzeigen*/
@@ -100,7 +101,7 @@ void switchDriveMode()
 void init() // Initialisierung
 {
     mylcd.cls();                     // LCD-Display leeren und cursor auf 0,0 setzen
-    mylcd.printf("Speed:");          // Schriftzug für Geschwindigkeit anzeigen
+    mylcd.printf("Speed: 65");       // Schriftzug für Geschwindigkeit anzeigen
     mylcd.cursorpos(0x40);           // in 2- Zeile springen
     mylcd.printf("Auto Drive: Off"); // Schriftzug für Fahrmodus anzeigen
     printSpeed();                    // Geschwindigkeit anzeigen
@@ -136,18 +137,18 @@ int main()
                 leftWheel(speed);
                 break;
             case 'R': // rechts
-                rightWheel(speed * -1);
-                leftWheel(speed);
-                break;
-            case 'L': // links
                 rightWheel(speed);
                 leftWheel(speed * -1);
+                break;
+            case 'L': // links
+                rightWheel(speed * -1);
+                leftWheel(speed);
                 break;
             case 'D': // rückwärts
                 rightWheel(speed * -1);
                 leftWheel(speed * -1);
                 break;
-            case 'O': // reset schalter
+            case 'O': // notaus schalter
                 stop();
                 followLine = false;
                 break;
@@ -161,13 +162,13 @@ int main()
             }
         }
         if (followLine)
-        {
-            if (sensorRight.read()) // rechter Sensor über schwarz -> nach links lenken
+        { // Wenn Sensor über Schwarz -> "1" Signal, über Weiß -> "0" Signal
+            if (sensorRight == BLACK)
             {
                 rightWheel(-TURN_SPEED_SLOW);
                 leftWheel(TURN_SPEED_FAST);
             }
-            else if (sensorLeft.read()) // linker Sensor über schwarz -> nach rechts lenken
+            else if (sensorLeft == BLACK)
             {
                 rightWheel(TURN_SPEED_FAST);
                 leftWheel(-TURN_SPEED_SLOW);
