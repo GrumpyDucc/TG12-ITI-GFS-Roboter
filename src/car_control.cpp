@@ -11,8 +11,8 @@ DigitalIn sensorRight(PA_14);
 DigitalIn sensorLeft(PA_15);
 DigitalIn manualDriveSwitch(PA_10);
 
-PwmOut leftForward(PC_7);
 PwmOut leftReverse(PC_6);
+PwmOut leftForward(PC_7);
 PwmOut rightReverse(PC_8);
 PwmOut rightForward(PC_9);
 
@@ -30,8 +30,8 @@ void rightWheel(float speed)
     printf("speed: %f\n", speed);
     if (speed > 0) // vorwärts
     {
-        rightReverse = speed;
         rightForward = 0;
+        rightReverse = speed;
     }
     else // rückwärts
     {
@@ -46,8 +46,8 @@ void leftWheel(float speed)
     printf("speed: %f\n", speed);
     if (speed > 0) // vorwärts
     {
-        leftForward = speed;
         leftReverse = 0;
+        leftForward = speed;
     }
     else // rückwärts
     {
@@ -123,7 +123,7 @@ int main()
             switchDriveMode();
             thread_sleep_for(250); // Entprellen
         }
-        if (hc05.readable())
+        if (hc05.readable()) // bluetooth Steuerung
         {
             thread_sleep_for(20);
             hc05.read(data, 1);
@@ -161,8 +161,8 @@ int main()
                 break;
             }
         }
-        if (followLine)
-        { // Wenn Sensor über Schwarz -> "1" Signal, über Weiß -> "0" Signal
+        if (followLine) // Linienfolgemodus
+        {               // Wenn Sensor über Schwarz -> "1" Signal, über Weiß -> "0" Signal
             if (sensorRight == BLACK)
             {
                 rightWheel(-TURN_SPEED_SLOW);
